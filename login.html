@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Acceso al Sistema — Aurora ERP</title>
+<link rel="icon" type="image/x-icon" href="source/logo.png">
+<link rel="shortcut icon" type="image/x-icon" href="source/logo.ico">
+<meta name="description" content="Inicia sesión o registra tu empresa en Aurora ERP para consultar solvencia, pagos, módulos y facturación fiscal digital.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ---------- Tokens ---------- */
+:root{
+  color-scheme: light;
+  --bg:#ffffff;
+  --bg-2:#f3f6f5;
+  --bg-3:#e8eeeb;
+  --ink:#0f172a;
+  --ink-2:#475569;
+  --ink-3:#94a3b8;
+  --line:#e2e8f0;
+  --line-2:#cbd5e1;
+  --accent:#00986f;
+  --accent-soft:rgba(0,152,111,.10);
+  --accent-2:#2ad2c9;
+  --blue:#2563eb;
+  --blue-hover:#1d4ed8;
+  --blue-soft:rgba(37,99,235,.10);
+  --industrial:#485cc7;
+  --radius-lg:24px;
+  --radius-md:16px;
+  --radius-sm:10px;
+  --font:"Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  box-sizing:border-box;
+}
+
+*,*::before,*::after{box-sizing:inherit}
+html{
+  -webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;
+  -webkit-touch-callout:none;
+}
+body{
+  margin:0;background:var(--bg-2);color:var(--ink);
+  font-family:var(--font);font-size:1rem;line-height:1.5;
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem 1.25rem;
+}
+input,textarea,select{
+  -webkit-user-select:text;-moz-user-select:text;-ms-user-select:text;user-select:text;
+}
+img,svg{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:6px}
+
+.icon{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.icon--sm{width:16px;height:16px}
+
+/* ---------- Login Layout ---------- */
+.auth-wrapper{
+  width:100%;max-width:1020px;
+  background:var(--bg);border-radius:var(--radius-lg);
+  border:1px solid var(--line);
+  box-shadow:0 24px 64px -12px rgba(15,23,42,.12);
+  display:grid;grid-template-columns:1.05fr 1.25fr;
+  overflow:hidden;
+}
+
+/* Columna Izquierda: Brand & Value */
+.auth-side{
+  background:linear-gradient(150deg, #0b1329 0%, #1e293b 60%, #172554 100%);
+  color:#fff;padding:3.5rem 2.75rem;
+  display:flex;flex-direction:column;justify-content:space-between;
+  position:relative;overflow:hidden;
+}
+.auth-side::after{
+  content:"";position:absolute;bottom:-80px;right:-80px;width:260px;height:260px;
+  background:radial-gradient(circle, rgba(37,99,235,.35) 0%, transparent 70%);
+  border-radius:50%;pointer-events:none;
+}
+.brand{display:inline-flex;align-items:center;gap:.5rem;font-weight:700;font-size:1.6rem;letter-spacing:-.04em}
+.brand__ring{width:1.15em;height:1.15em;border-radius:50%;border:3px solid var(--accent-2);box-shadow:0 0 0 3px rgba(42,210,201,.25)}
+
+.auth-side__content{margin:3rem 0}
+.auth-side__content h2{font-size:clamp(1.75rem, 2.5vw, 2.25rem);font-weight:800;line-height:1.2;margin:0 0 1rem;letter-spacing:-.03em}
+.auth-side__content p{color:rgba(255,255,255,.78);font-size:1rem;line-height:1.6;margin-bottom:2rem}
+
+.auth-features{list-style:none;padding:0;margin:0;display:grid;gap:1.1rem}
+.auth-features li{display:flex;align-items:flex-start;gap:.75rem;font-size:.92rem;color:rgba(255,255,255,.9)}
+.auth-features .icon{color:#38bdf8;flex-shrink:0;margin-top:2px}
+
+.auth-side__footer{
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:.85rem;color:rgba(255,255,255,.65);border-top:1px solid rgba(255,255,255,.12);
+  padding-top:1.5rem;
+}
+.auth-side__footer a{color:#93c5fd;font-weight:600;display:inline-flex;align-items:center;gap:.35rem;transition:color .2s}
+.auth-side__footer a:hover{color:#fff;text-decoration:underline}
+
+/* Columna Derecha: Formulario */
+.auth-main{
+  padding:3.5rem 3.25rem;display:flex;flex-direction:column;justify-content:center;
+}
+.auth-header{margin-bottom:1.75rem}
+.auth-header h1{margin:0 0 .5rem;font-size:1.85rem;font-weight:800;letter-spacing:-.03em}
+.auth-header p{margin:0;color:var(--ink-2);font-size:.95rem}
+
+/* Pestañas de modo: Iniciar sesión / Registro */
+.auth-tabs{
+  display:grid;grid-template-columns:1fr 1fr;gap:.4rem;
+  background:var(--bg-2);padding:.35rem;border-radius:var(--radius-sm);
+  margin-bottom:2rem;border:1px solid var(--line);
+}
+.auth-tab{
+  padding:.65rem .85rem;font-size:.9rem;font-weight:700;
+  text-align:center;border-radius:8px;color:var(--ink-2);
+  transition:all .2s var(--ease);
+}
+.auth-tab.is-active{
+  background:var(--bg);color:var(--blue);box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+/* Formularios */
+.auth-form{display:none;flex-direction:column;gap:1.15rem}
+.auth-form.is-active{display:flex}
+
+.form-group{display:grid;gap:.4rem}
+.form-group label{font-size:.85rem;font-weight:700;color:var(--ink)}
+.form-group input, .form-group select{
+  padding:.8rem 1rem;border-radius:var(--radius-sm);border:1px solid var(--line-2);
+  font-family:inherit;font-size:.95rem;background:var(--bg);color:var(--ink);
+  transition:border-color .2s, box-shadow .2s;
+}
+.form-group input:focus, .form-group select:focus{
+  outline:none;border-color:var(--blue);
+  box-shadow:0 0 0 3px rgba(37,99,235,.15);
+}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+
+.form-meta{display:flex;justify-content:space-between;align-items:center;font-size:.85rem}
+.form-meta label{display:flex;align-items:center;gap:.45rem;color:var(--ink-2);cursor:pointer}
+.form-meta a{color:var(--blue);font-weight:600}
+.form-meta a:hover{text-decoration:underline}
+
+/* Botones de acción */
+.btn-submit{
+  background:var(--blue);color:#fff;padding:.95rem;border-radius:var(--radius-sm);
+  font-weight:700;font-size:1rem;display:inline-flex;align-items:center;
+  justify-content:center;gap:.6rem;transition:all .25s var(--ease);
+  box-shadow:0 4px 14px rgba(37,99,235,.28);margin-top:.4rem;
+}
+.btn-submit:hover{
+  background:var(--blue-hover);transform:translateY(-1px);
+  box-shadow:0 8px 20px rgba(37,99,235,.35);
+}
+
+.divider{
+  display:flex;align-items:center;text-align:center;color:var(--ink-3);
+  font-size:.8rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;
+  margin:.75rem 0;
+}
+.divider::before, .divider::after{content:"";flex:1;border-bottom:1px solid var(--line)}
+.divider span{padding:0 .85rem}
+
+.btn-demo{
+  background:rgba(37,99,235,.07);color:var(--blue);border:1px dashed rgba(37,99,235,.35);
+  padding:.8rem;border-radius:var(--radius-sm);font-weight:700;font-size:.9rem;
+  display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+  transition:all .2s var(--ease);
+}
+.btn-demo:hover{
+  background:rgba(37,99,235,.14);border-color:var(--blue);
+}
+
+/* Toast Notificaciones */
+.login-toast{
+  position:fixed;bottom:2rem;right:2rem;z-index:9999;
+  background:#0f172a;color:#fff;padding:.95rem 1.4rem;border-radius:12px;
+  box-shadow:0 14px 36px rgba(0,0,0,.28);font-size:.92rem;font-weight:600;
+  display:none;align-items:center;gap:.65rem;animation:slideToast .3s var(--ease);
+  max-width:380px;border-left:4px solid var(--accent);
+}
+.login-toast.is-visible{display:flex}
+.login-toast--error{border-left-color:#ef4444}
+.login-toast--info{border-left-color:var(--blue)}
+@keyframes slideToast{from{transform:translateY(16px);opacity:0}to{transform:none;opacity:1}}
+
+@media (max-width: 860px){
+  body{padding:1rem}
+  .auth-wrapper{grid-template-columns:1fr;border-radius:var(--radius-md)}
+  .auth-side{padding:2.5rem 1.75rem}
+  .auth-main{padding:2.5rem 1.75rem}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- SVG Sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+  <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+  <symbol id="i-store" viewBox="0 0 24 24"><path d="M3 9 5 3h14l2 6"/><path d="M3 9h18v3a3 3 0 0 1-6 0 3 3 0 0 1-6 0 3 3 0 0 1-6 0V9z"/><path d="M5 14v7h14v-7"/><path d="M10 21v-4h4v4"/></symbol>
+</svg>
+
+<div class="auth-wrapper">
+  <!-- Lateral Informativo -->
+  <aside class="auth-side">
+    <div class="auth-side__top">
+      <a class="brand" href="index.html" aria-label="Aurora, inicio">aurora <span class="brand__ring" aria-hidden="true"></span></a>
+      <div class="auth-side__content">
+        <h2>El sistema que conecta tu operación.</h2>
+        <p>Inicia sesión para gestionar tus sucursales, consultar la solvencia de tu contrato de software y tramitar tus pagos de suscripción.</p>
+        <ul class="auth-features">
+          <li>
+            <svg class="icon"><use href="#i-check"/></svg>
+            <span>Control de múltiples negocios en una sola sesión.</span>
+          </li>
+          <li>
+            <svg class="icon"><use href="#i-check"/></svg>
+            <span>Solvencia de contrato y facturación fiscal electrónica.</span>
+          </li>
+          <li>
+            <svg class="icon"><use href="#i-check"/></svg>
+            <span>Conciliación inmediata de pagos en Bolívares y Divisas.</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="auth-side__footer">
+      <span>© 2026 Arriaga Dynamics</span>
+      <a href="index.html">← Volver al inicio</a>
+    </div>
+  </aside>
+
+  <!-- Panel de Autenticación -->
+  <main class="auth-main">
+    <div class="auth-header">
+      <h1 id="authTitle">Acceso de Clientes</h1>
+      <p id="authSubtitle">Ingresa con tus credenciales de suscripción Aurora ERP.</p>
+    </div>
+
+    <!-- 1. Formulario de Inicio de Sesión -->
+    <form class="auth-form is-active" id="formLogin">
+      <div class="form-group">
+        <label for="loginEmail">Correo Corporativo o Usuario:</label>
+        <input type="email" id="loginEmail" placeholder="ejemplo@tuempresa.com" required value="admin@sanjose.com">
+      </div>
+      <div class="form-group">
+        <label for="loginPassword">Contraseña:</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" required value="aurora2026">
+      </div>
+      <div class="form-meta">
+        <label>
+          <input type="checkbox" id="loginRemember" checked> Recordar mi sesión
+        </label>
+        <a href="javascript:void(0)" onclick="forgotPassword()">¿Olvidaste tu clave?</a>
+      </div>
+      <button class="btn-submit" type="submit">
+        <span>Ingresar al Portal</span>
+        <svg class="icon icon--sm"><use href="#i-arrow"/></svg>
+      </button>
+
+      <div class="divider"><span>o prueba con acceso demo</span></div>
+
+<!-- Toast Notificaciones -->
+<div class="login-toast" id="loginToast" role="alert" aria-live="polite"></div>
+
+<script>
+/* =========================================================
+   Lógica de Autenticación y Registro (Aurora ERP)
+   ========================================================= */
+const tabLogin = document.getElementById('tabLogin');
+const tabRegister = document.getElementById('tabRegister');
+const formLogin = document.getElementById('formLogin');
+const formRegister = document.getElementById('formRegister');
+const authTitle = document.getElementById('authTitle');
+const authSubtitle = document.getElementById('authSubtitle');
+const toast = document.getElementById('loginToast');
+
+// Lectura de parámetros de redirección en URL
+const urlParams = new URLSearchParams(window.location.search);
+const redirectTarget = urlParams.get('redirect') || 'clientes.html';
+const initialMsg = urlParams.get('msg');
+
+let toastTimer = null;
+function showToast(text, type = 'success') {
+  if (!toast) return;
+  toast.className = 'login-toast is-visible' + (type === 'error' ? ' login-toast--error' : (type === 'info' ? ' login-toast--info' : ''));
+  toast.textContent = text;
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('is-visible');
+  }, 4200);
+}
+
+// Si fue redirigido porque no estaba logueado
+if (initialMsg === 'login_required') {
+  showToast('Debes iniciar sesión o registrar tu empresa para acceder al Portal de Pagos.', 'info');
+}
+
+// Conmutar Pestañas
+tabLogin.addEventListener('click', () => {
+  tabLogin.classList.add('is-active');
+  tabLogin.setAttribute('aria-selected', 'true');
+  tabRegister.classList.remove('is-active');
+  tabRegister.setAttribute('aria-selected', 'false');
+  formLogin.classList.add('is-active');
+  formRegister.classList.remove('is-active');
+  authTitle.textContent = 'Acceso de Clientes';
+  authSubtitle.textContent = 'Ingresa con tus credenciales de suscripción Aurora ERP.';
+});
+
+tabRegister.addEventListener('click', () => {
+  tabRegister.classList.add('is-active');
+  tabRegister.setAttribute('aria-selected', 'true');
+  tabLogin.classList.remove('is-active');
+  tabLogin.setAttribute('aria-selected', 'false');
+  formRegister.classList.add('is-active');
+  formLogin.classList.remove('is-active');
+  authTitle.textContent = 'Registrar Empresa';
+  authSubtitle.textContent = 'Crea la cuenta de tu empresa para gestionar licencias y pagos.';
+});
+
+// Iniciar sesión
+formLogin.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPassword').value;
+
+  if (!email || !pass) {
+    showToast('Por favor completa todos los campos.', 'error');
+    return;
+  }
+
+  // Comprobar si coincide con la demo o con usuario registrado previamente
+  let storedUser = null;
+  try {
+    const raw = localStorage.getItem('aurora_user');
+    if (raw) storedUser = JSON.parse(raw);
+  } catch(err){}
+
+  const userSession = {
+    name: storedUser && storedUser.email === email ? storedUser.name : 'Distribuidora San José C.A.',
+    email: email,
+    rif: storedUser && storedUser.email === email ? storedUser.rif : 'J-40982143-0',
+    plan: storedUser && storedUser.email === email ? storedUser.plan : 'Comercial',
+    sucursales: 3,
+    loggedInAt: Date.now()
+  };
+
+  localStorage.setItem('aurora_user', JSON.stringify(userSession));
+  showToast('¡Sesión iniciada correctamente! Redirigiendo al portal...', 'success');
+
+  setTimeout(() => {
+    window.location.href = redirectTarget;
+  }, 900);
+});
+
+// Registro de nueva empresa
+formRegister.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const empresa = document.getElementById('regEmpresa').value.trim();
+  const rif = document.getElementById('regRif').value.trim();
+  const plan = document.getElementById('regLicencia').value;
+  const email = document.getElementById('regEmail').value.trim();
+  const pass = document.getElementById('regPassword').value;
+
+  if (!empresa || !rif || !email || !pass) {
+    showToast('Por favor completa todos los datos requeridos.', 'error');
+    return;
+  }
+
+  const userSession = {
+    name: empresa,
+    email: email,
+    rif: rif,
+    plan: plan,
+    sucursales: 1,
+    loggedInAt: Date.now()
+  };
+
+  localStorage.setItem('aurora_user', JSON.stringify(userSession));
+  showToast('¡Empresa registrada con éxito! Bienvenido a Aurora ERP.', 'success');
+
+  setTimeout(() => {
+    window.location.href = redirectTarget;
+  }, 1000);
+});
+
+// Acceso rápido demo
+document.getElementById('btnQuickDemo').addEventListener('click', () => {
+  document.getElementById('loginEmail').value = 'admin@sanjose.com';
+  document.getElementById('loginPassword').value = 'aurora2026';
+  formLogin.dispatchEvent(new Event('submit'));
+});
+
+function forgotPassword() {
+  showToast('Se ha enviado un enlace de recuperación al correo registrado.', 'info');
+}
+</script>
+</body>
+</html>
